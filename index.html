@@ -542,7 +542,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const servidores = [
-    {nome:"🧿 Seven", url:"http://sevenn.blcplay.com"},
+    {nome:"🧿 Seven", url:"http://seven.blcplay.com"},
     {nome:"💣 Explosion", url:"http://nsync.space"},
     {nome:"⚡ Speed", url:"http://netuno.live"},
     {nome:"🛸 Galaxy", url:"http://galaxy.blcplay.com"},
@@ -642,67 +642,34 @@ function gerar(){
     });
 }
 
-// Função de Validação Avançada Contra Falsos Positivos de Bloqueio Local
+// Nova função assíncrona ultraprecisa para checagem online e offline (Sem falsos positivos de cache/CORS)
 function verificarStatus(url, elementId) {
     const indicator = document.getElementById(elementId);
     if (!indicator) return;
 
-    const startTime = Date.now();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 4500); // Limite de 4.5 segundos para resposta
 
-    if (window.location.protocol === 'https:' && url.startsWith('http://')) {
-        let img = new Image();
-        let timeoutId;
-        let resolved = false;
+    // Limpa a URL de barras finais e adiciona um endpoint leve padrão para testar a porta HTTP ativa
+    const testUrl = url.replace(/\/$/, "") + "/index.html?t=" + Date.now();
 
-        const finalize = (isOnline) => {
-            if (resolved) return;
-            resolved = true;
-            clearTimeout(timeoutId);
-            img.onload = img.onerror = null;
-            img.src = "";
-            indicator.classList.remove('checking');
-            indicator.classList.add(isOnline ? 'online' : 'offline');
-        };
-
-        timeoutId = setTimeout(() => {
-            finalize(false); // Estourou os 5s = Offline
-        }, 5000);
-
-        img.onload = function() {
-            finalize(true); // Se carregou a imagem = Servidor respondendo e Online
-        };
-
-        img.onerror = function() {
-            const duration = Date.now() - startTime;
-            // Se falhar em menos de 120ms em ambiente HTTPS, foi o bloqueio local do browser (Mixed Content Blocker)
-            // e NÃO uma resposta do servidor. Como o navegador bloqueia tudo, consideramos offline para segurança.
-            if (duration < 120) {
-                finalize(false);
-            } else {
-                // Se demorou mais e deu erro, o sinal chegou à rede, mas o servidor pode estar ativo recusando a rota direta
-                finalize(true);
-            }
-        };
-
-        // Adiciona timestamp dinâmico para limpar o cache do navegador
-        img.src = url + "/favicon.ico?t=" + startTime;
-    } else {
-        // Modo nativo Fetch para contextos limpos (HTTP -> HTTP ou HTTPS -> HTTPS)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        fetch(url, { mode: 'no-cors', signal: controller.signal })
-            .then(() => {
-                clearTimeout(timeoutId);
-                indicator.classList.remove('checking');
-                indicator.classList.add('online');
-            })
-            .catch(() => {
-                clearTimeout(timeoutId);
-                indicator.classList.remove('checking');
-                indicator.classList.add('offline');
-            });
-    }
+    fetch(testUrl, { 
+        method: 'HEAD', // Método ultra leve, pede apenas os cabeçalhos sem baixar a página
+        mode: 'no-cors', 
+        cache: 'no-store',
+        signal: controller.signal 
+    })
+    .then(() => {
+        // Se o fetch resolveu (mesmo em modo no-cors), significa que a porta respondeu na rede.
+        clearTimeout(timeoutId);
+        indicator.classList.remove('checking', 'offline');
+        indicator.classList.add('online');
+    })
+    .catch((err) => {
+        clearTimeout(timeoutId);
+        indicator.classList.remove('checking', 'online');
+        indicator.classList.add('offline');
+    });
 }
 
 function testar(url){ window.open(url, "_blank"); }
