@@ -642,31 +642,52 @@ function gerar(){
     });
 }
 
-// Nova Função de Checagem Híbrida Inteligente (Corrige o bloqueio de Conteúdo Misto HTTPS/HTTP)
+// Função de Validação Avançada Contra Falsos Positivos de Bloqueio Local
 function verificarStatus(url, elementId) {
     const indicator = document.getElementById(elementId);
     if (!indicator) return;
 
-    // Se o seu site estiver em HTTPS e o link do servidor for apenas HTTP
+    const startTime = Date.now();
+
     if (window.location.protocol === 'https:' && url.startsWith('http://')) {
         let img = new Image();
-        
-        let timeoutId = setTimeout(() => {
-            img.src = ""; 
-            indicator.classList.remove('checking');
-            indicator.classList.add('offline');
-        }, 5000); // 5 segundos de limite
+        let timeoutId;
+        let resolved = false;
 
-        img.onload = img.onerror = function() {
+        const finalize = (isOnline) => {
+            if (resolved) return;
+            resolved = true;
             clearTimeout(timeoutId);
+            img.onload = img.onerror = null;
+            img.src = "";
             indicator.classList.remove('checking');
-            indicator.classList.add('online'); 
+            indicator.classList.add(isOnline ? 'online' : 'offline');
         };
 
-        // Solicita o carregamento do favicon para forçar o aperto de mão (handshake) com o servidor
-        img.src = url + "/favicon.ico?t=" + new Date().getTime();
+        timeoutId = setTimeout(() => {
+            finalize(false); // Estourou os 5s = Offline
+        }, 5000);
+
+        img.onload = function() {
+            finalize(true); // Se carregou a imagem = Servidor respondendo e Online
+        };
+
+        img.onerror = function() {
+            const duration = Date.now() - startTime;
+            // Se falhar em menos de 120ms em ambiente HTTPS, foi o bloqueio local do browser (Mixed Content Blocker)
+            // e NÃO uma resposta do servidor. Como o navegador bloqueia tudo, consideramos offline para segurança.
+            if (duration < 120) {
+                finalize(false);
+            } else {
+                // Se demorou mais e deu erro, o sinal chegou à rede, mas o servidor pode estar ativo recusando a rota direta
+                finalize(true);
+            }
+        };
+
+        // Adiciona timestamp dinâmico para limpar o cache do navegador
+        img.src = url + "/favicon.ico?t=" + startTime;
     } else {
-        // Se o protocolo for compatível (HTTP -> HTTP ou HTTPS -> HTTPS), usa o Fetch tradicional
+        // Modo nativo Fetch para contextos limpos (HTTP -> HTTP ou HTTPS -> HTTPS)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
