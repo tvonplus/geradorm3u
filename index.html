@@ -303,7 +303,7 @@ input:checked + .slider::after {
     color: var(--text-main);
     font-weight: 600;
     font-size: 12px;
-    cursor: default; /* Remove a mãozinha */
+    cursor: default;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -399,7 +399,7 @@ input:checked + .slider::after {
     font-size: 13px;
     white-space: nowrap;
     flex-shrink: 0;
-    width: 105px; 
+    width: 120px; 
 }
 
 .server-url-display {
@@ -598,7 +598,6 @@ input:checked + .slider::after {
     .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 20px; }
     .form-container { margin-top: 20px; }
     
-    /* Esconde a área padrão de resultados no mobile, pois agora abre em Pop-up */
     .main-content { display: none; }
     
     .server-list { align-items: stretch; width: 100%; }
@@ -694,7 +693,7 @@ input:checked + .slider::after {
                 <label>Senha</label>
                 <input id="pass" type="text" placeholder="Digite a senha" autocomplete="off">
             </div>
-            <button class="btn-submit" onclick="gerar()">Gerar Acessos</button>
+            <button class="btn-submit" onclick="gerar()">Gerar todas M3U</button>
             
             <button class="btn-partner" onclick="openPartnerModal()">
                 Códigos Hd Player
@@ -710,7 +709,7 @@ input:checked + .slider::after {
 <div class="main-content">
     <h3>Servidores Disponíveis</h3>
     <div id="resultado">
-        <div class="empty-state">Insira as credenciais ao lado e clique em "Gerar Acessos".</div>
+        <div class="empty-state">Insira as credenciais ao lado e clique em "Gerar todas M3U".</div>
     </div>
 </div>
 
@@ -763,16 +762,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 const servidores = [
-    {nome:"Seven", url:"http://seven.blcplay.com", codigo:"1111"},
-    {nome:"Explosion", url:"http://nsync.space", codigo:"5555"},
-    {nome:"Speed", url:"http://netuno.live", codigo:"3333"},
-    {nome:"Galaxy", url:"http://galaxy.blcplay.com", codigo:"6666"},
-    {nome:"Fire", url:"http://fire.kkrototv.fun", codigo:"1414"},
-    {nome:"Lunar", url:"http://lunar.kkrototv.fun", codigo:"4444"},
-    {nome:"Atena", url:"http://atena.kkrototv.fun", codigo:"2233"},
-    {nome:"Solar", url:"http://solar.kkrototv.fun", codigo:"7777"},
-    {nome:"Venus", url:"http://venus.blcplay.com", codigo:"9999"},
-    {nome:"Urano", url:"http://urano.kkrototv.fun", codigo:"8888"}
+    {nome:"🧿 Seven", url:"http://seven.blcplay.com", codigo:"1111"},
+    {nome:"💣 Explosion", url:"http://nsync.space", codigo:"5555"},
+    {nome:"⚡ Speed", url:"http://netuno.live", codigo:"3333"},
+    {nome:"🛸 Galaxy", url:"http://galaxy.blcplay.com", codigo:"6666"},
+    {nome:"🔥 Fire", url:"http://fire.kkrototv.fun", codigo:"1414"},
+    {nome:"🌑 Lunar", url:"http://lunar.kkrototv.fun", codigo:"4444"},
+    {nome:"🏛️ Atena", url:"http://atena.kkrototv.fun", codigo:"2233"},
+    {nome:"☀️ Solar", url:"http://solar.kkrototv.fun", codigo:"7777"},
+    {nome:"🌬️ Venus", url:"http://venus.blcplay.com", codigo:"9999"},
+    {nome:"🪐 Urano", url:"http://urano.kkrototv.fun", codigo:"8888"}
 ];
 
 let textoGlobalCopiarTudo = "";
@@ -781,18 +780,21 @@ function renderizarModalParceria(usuario, senha) {
     const bodyModal = document.getElementById("modal-partner-body");
     bodyModal.innerHTML = "";
     
-    let blocosTextoParaCopiarTudo = [];
+    // Início estrutural da cópia unificada solicitada
+    let textoCopiarTudo = `✅ Usuário: ${usuario}\n✅ Senha: ${senha}\n\nServidores:\n`;
 
     servidores.forEach((s, i) => {
         let card = document.createElement("div");
         card.className = "partner-card";
         
-        let textoParaCopiar = `${s.nome}\n\n🌐 Código: ${s.codigo}\n✅ Usuário: ${usuario}\n✅ Senha: ${senha}`;
-        blocosTextoParaCopiarTudo.push(textoParaCopiar);
+        let textoParaCopiarIndividual = `${s.nome}\n\n🌐 Código: ${s.codigo}\n✅ Usuário: ${usuario}\n✅ Senha: ${senha}`;
+        
+        // Alimenta a lista interna do bloco estruturado Copiar Tudo
+        textoCopiarTudo += `${s.nome}\n🌐 Código: ${s.codigo}\n---------------------\n`;
         
         card.innerHTML = `
             <div class="partner-info">
-                <div class="partner-name">${s.nome} 🧿</div>
+                <div class="partner-name">${s.nome}</div>
                 🌐 Código: <strong>${s.codigo}</strong><br>
                 ✅ Usuário: ${usuario}<br>
                 ✅ Senha: ${senha}
@@ -802,7 +804,7 @@ function renderizarModalParceria(usuario, senha) {
         bodyModal.appendChild(card);
 
         document.getElementById(`partner-copy-${i}`).onclick = function() {
-            navigator.clipboard.writeText(textoParaCopiar);
+            navigator.clipboard.writeText(textoParaCopiarIndividual);
             this.innerText = "Copiado!";
             this.classList.add("copied");
             setTimeout(() => {
@@ -812,8 +814,12 @@ function renderizarModalParceria(usuario, senha) {
         };
     });
 
-    // Une todas as informações separadas por uma quebra de linha dupla para o botão Copiar Tudo
-    textoGlobalCopiarTudo = blocosTextoParaCopiarTudo.join("\n\n====================\n\n");
+    // Remove os hífens extras gerados no último loop para manter a formatação limpa
+    if(textoCopiarTudo.endsWith("\n---------------------\n")) {
+        textoCopiarTudo = textoCopiarTudo.substring(0, textoCopiarTudo.length - 23);
+    }
+
+    textoGlobalCopiarTudo = textoCopiarTudo;
 }
 
 function copiarTudoParcerias() {
@@ -833,7 +839,6 @@ function openPartnerModal() {
     let user = document.getElementById("user").value.trim();
     let pass = document.getElementById("pass").value.trim();
 
-    // Se o usuário preencher o campo e clicar direto na parceria, já gera de forma automatizada
     if (user && pass) {
         renderizarModalParceria(user, pass);
     } else {
@@ -935,18 +940,15 @@ function gerar(){
         listContainer.appendChild(row);
     });
 
-    // Se for celular (largura menor ou igual a 850px), renderiza e joga dentro do Modal Pop-up dedicado
     if (window.innerWidth <= 850) {
         const mobileBody = document.getElementById("mobile-result-body");
         mobileBody.innerHTML = "";
         mobileBody.appendChild(listContainer);
         document.getElementById("mobile-result-modal").classList.add("active");
     } else {
-        // Se for Desktop, coloca na lateral direita padrão do layout original
         resultado.appendChild(listContainer);
     }
 
-    // Inicia a verificação de status após injetar o container no DOM
     servidores.forEach((s, i) => {
         verificarStatus(s.url, `status-${i}`);
 
