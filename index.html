@@ -293,7 +293,7 @@ input:checked + .slider::after {
     background-color: var(--accent-hover);
 }
 
-/* Botão Abrir Parceria */
+/* Botão Códigos Hd Player */
 .btn-partner {
     width: 100%;
     padding: 11px;
@@ -303,7 +303,7 @@ input:checked + .slider::after {
     color: var(--text-main);
     font-weight: 600;
     font-size: 12px;
-    cursor: pointer;
+    cursor: default; /* Remove a mãozinha */
     display: flex;
     align-items: center;
     justify-content: center;
@@ -458,7 +458,7 @@ input:checked + .slider::after {
     font-size: 13px;
 }
 
-/* --- ESTILOS DO MODAL DE PARCERIA (POP-UP) --- */
+/* --- ESTILOS DOS MODAIS (POP-UP) --- */
 .modal-overlay {
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
@@ -502,11 +502,6 @@ input:checked + .slider::after {
     display: flex;
     align-items: center;
     gap: 10px;
-}
-.modal-logo {
-    width: 28px;
-    height: 28px;
-    object-fit: contain;
 }
 .modal-header h4 {
     font-size: 15px;
@@ -571,19 +566,43 @@ input:checked + .slider::after {
     border-color: #22c55e !important;
 }
 
+/* Botão Copiar Tudo */
+.btn-copy-all {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: none;
+    background-color: var(--accent);
+    color: white;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(234, 88, 12, 0.2);
+    text-align: center;
+}
+.btn-copy-all:hover {
+    background-color: var(--accent-hover);
+}
+.btn-copy-all.copied {
+    background-color: #22c55e !important;
+}
+
 /* Scrollbars Global */
 .main-content::-webkit-scrollbar { width: 5px; }
 .main-content::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 10px; }
 
-/* --- RESPONSIVIDADE CORRIGIDA (CELULAR) --- */
+/* --- RESPONSIVIDADE --- */
 @media(max-width: 850px){
     body { flex-direction: column; overflow: auto; height: auto; }
     .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 20px; }
     .form-container { margin-top: 20px; }
-    .main-content { overflow-y: visible; padding: 20px; }
+    
+    /* Esconde a área padrão de resultados no mobile, pois agora abre em Pop-up */
+    .main-content { display: none; }
+    
     .server-list { align-items: stretch; width: 100%; }
     
-    /* Mantém Indicador, Nome e Link rigorosamente na mesma linha */
     .server-row { 
         display: flex; 
         flex-direction: column; 
@@ -594,29 +613,21 @@ input:checked + .slider::after {
     }
     .server-meta-block { 
         display: flex; 
-        flex-direction: row; 
-        align-items: center; 
-        justify-content: flex-start;
-        gap: 8px; 
+        flex-direction: column; 
+        align-items: flex-start;
+        gap: 6px; 
         width: 100%;
     }
     .server-name { 
         width: auto; 
-        min-width: 65px;
-        max-width: 80px;
-        text-align: left; 
-        overflow: hidden;
-        text-overflow: ellipsis;
     }
     .server-url-display { 
-        flex: 1;
-        width: 0; /* Força o flexbox a respeitar o truncamento de texto na mesma linha */
+        width: 100%;
         max-width: none; 
     }
     
-    /* Botões passam para a linha de baixo organizados */
     .row-actions { 
-        justify-content: flex-end; 
+        justify-content: space-between; 
         width: 100%;
     }
     .row-actions button {
@@ -686,7 +697,7 @@ input:checked + .slider::after {
             <button class="btn-submit" onclick="gerar()">Gerar Acessos</button>
             
             <button class="btn-partner" onclick="openPartnerModal()">
-                <span>🤝</span> Parceria HD Player
+                Códigos Hd Player
             </button>
         </div>
     </div>
@@ -712,8 +723,22 @@ input:checked + .slider::after {
             </div>
             <button class="modal-close" onclick="closePartnerModal()">&times;</button>
         </div>
-        <div class="modal-body" id="modal-partner-body">
+        <div class="modal-body">
+            <div id="modal-partner-body"></div>
+            <button class="btn-copy-all" id="btn-copy-all-partners" onclick="copiarTudoParcerias()">Copiar Tudo</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="mobile-result-modal" onclick="closeMobileModalOutside(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-header-title">
+                <h4>Servidores Disponíveis</h4>
             </div>
+            <button class="modal-close" onclick="closeMobileModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="mobile-result-body"></div>
     </div>
 </div>
 
@@ -734,37 +759,40 @@ document.addEventListener("DOMContentLoaded", () => {
         document.documentElement.setAttribute("data-palette", savedPalette);
     }
     
-    // Inicializa os códigos do modal congelados visualmente antes de gerar
     renderizarModalParceria("---", "---");
 });
 
 const servidores = [
-    {nome:"🧿 Seven", url:"http://seven.blcplay.com", codigo:"1111"},
-    {nome:"💣 Explosion", url:"http://nsync.space", codigo:"5555"},
-    {nome:"⚡ Speed", url:"http://netuno.live", codigo:"3333"},
-    {nome:"🛸 Galaxy", url:"http://galaxy.blcplay.com", codigo:"6666"},
-    {nome:"🔥 Fire", url:"http://fire.kkrototv.fun", codigo:"1414"},
-    {nome:"🌑 Lunar", url:"http://lunar.kkrototv.fun", codigo:"4444"},
-    {nome:"🏛️ Atena", url:"http://atena.kkrototv.fun", codigo:"2233"},
-    {nome:"☀️ Solar", url:"http://solar.kkrototv.fun", codigo:"7777"},
-    {nome:"🌬️ Venus", url:"http://venus.blcplay.com", codigo:"9999"},
-    {nome:"🪐 Urano", url:"http://urano.kkrototv.fun", codigo:"8888"}
+    {nome:"Seven", url:"http://seven.blcplay.com", codigo:"1111"},
+    {nome:"Explosion", url:"http://nsync.space", codigo:"5555"},
+    {nome:"Speed", url:"http://netuno.live", codigo:"3333"},
+    {nome:"Galaxy", url:"http://galaxy.blcplay.com", codigo:"6666"},
+    {nome:"Fire", url:"http://fire.kkrototv.fun", codigo:"1414"},
+    {nome:"Lunar", url:"http://lunar.kkrototv.fun", codigo:"4444"},
+    {nome:"Atena", url:"http://atena.kkrototv.fun", codigo:"2233"},
+    {nome:"Solar", url:"http://solar.kkrototv.fun", codigo:"7777"},
+    {nome:"Venus", url:"http://venus.blcplay.com", codigo:"9999"},
+    {nome:"Urano", url:"http://urano.kkrototv.fun", codigo:"8888"}
 ];
+
+let textoGlobalCopiarTudo = "";
 
 function renderizarModalParceria(usuario, senha) {
     const bodyModal = document.getElementById("modal-partner-body");
     bodyModal.innerHTML = "";
+    
+    let blocosTextoParaCopiarTudo = [];
 
     servidores.forEach((s, i) => {
         let card = document.createElement("div");
         card.className = "partner-card";
         
-        // Formato exato solicitado para cópia limpa
         let textoParaCopiar = `${s.nome}\n\n🌐 Código: ${s.codigo}\n✅ Usuário: ${usuario}\n✅ Senha: ${senha}`;
+        blocosTextoParaCopiarTudo.push(textoParaCopiar);
         
         card.innerHTML = `
             <div class="partner-info">
-                <div class="partner-name">${s.nome}</div>
+                <div class="partner-name">${s.nome} 🧿</div>
                 🌐 Código: <strong>${s.codigo}</strong><br>
                 ✅ Usuário: ${usuario}<br>
                 ✅ Senha: ${senha}
@@ -783,9 +811,35 @@ function renderizarModalParceria(usuario, senha) {
             }, 1800);
         };
     });
+
+    // Une todas as informações separadas por uma quebra de linha dupla para o botão Copiar Tudo
+    textoGlobalCopiarTudo = blocosTextoParaCopiarTudo.join("\n\n====================\n\n");
+}
+
+function copiarTudoParcerias() {
+    if(!textoGlobalCopiarTudo) return;
+    navigator.clipboard.writeText(textoGlobalCopiarTudo);
+    
+    const btn = document.getElementById("btn-copy-all-partners");
+    btn.innerText = "Tudo Copiado!";
+    btn.classList.add("copied");
+    setTimeout(() => {
+        btn.innerText = "Copiar Tudo";
+        btn.classList.remove("copied");
+    }, 1800);
 }
 
 function openPartnerModal() {
+    let user = document.getElementById("user").value.trim();
+    let pass = document.getElementById("pass").value.trim();
+
+    // Se o usuário preencher o campo e clicar direto na parceria, já gera de forma automatizada
+    if (user && pass) {
+        renderizarModalParceria(user, pass);
+    } else {
+        renderizarModalParceria("---", "---");
+    }
+
     document.getElementById("partner-modal").classList.add("active");
 }
 
@@ -796,6 +850,16 @@ function closePartnerModal() {
 function closePartnerModalOutside(e) {
     if(e.target.id === "partner-modal") {
         closePartnerModal();
+    }
+}
+
+function closeMobileModal() {
+    document.getElementById("mobile-result-modal").classList.remove("active");
+}
+
+function closeMobileModalOutside(e) {
+    if(e.target.id === "mobile-result-modal") {
+        closeMobileModal();
     }
 }
 
@@ -843,7 +907,6 @@ function gerar(){
         return;
     }
 
-    // Alimenta os blocos de cópia do Pop-up com dados reais gerados
     renderizarModalParceria(user, pass);
 
     let resultado = document.getElementById("resultado");
@@ -870,12 +933,25 @@ function gerar(){
             </div>
         `;
         listContainer.appendChild(row);
-        resultado.appendChild(listContainer);
+    });
 
+    // Se for celular (largura menor ou igual a 850px), renderiza e joga dentro do Modal Pop-up dedicado
+    if (window.innerWidth <= 850) {
+        const mobileBody = document.getElementById("mobile-result-body");
+        mobileBody.innerHTML = "";
+        mobileBody.appendChild(listContainer);
+        document.getElementById("mobile-result-modal").classList.add("active");
+    } else {
+        // Se for Desktop, coloca na lateral direita padrão do layout original
+        resultado.appendChild(listContainer);
+    }
+
+    // Inicia a verificação de status após injetar o container no DOM
+    servidores.forEach((s, i) => {
         verificarStatus(s.url, `status-${i}`);
 
         document.getElementById(`m3u${i}`).onclick = function(){
-            navigator.clipboard.writeText(link);
+            navigator.clipboard.writeText(`${s.url}/get.php?username=${user}&password=${pass}&type=m3u_plus&output=mpegts`);
             this.innerText = "Copiado!";
             this.classList.add("copied");
             setTimeout(() => { this.innerText = "Copiar M3U"; this.classList.remove("copied"); }, 1800);
@@ -911,23 +987,12 @@ function verificarStatus(url, elementId) {
             indicator.classList.add(isOnline ? 'online' : 'offline');
         };
 
-        timeoutId = setTimeout(() => {
-            finalize(false);
-        }, 5000);
-
-        img.onload = function() {
-            finalize(true);
-        };
-
+        timeoutId = setTimeout(() => { finalize(false); }, 5000);
+        img.onload = function() { finalize(true); };
         img.onerror = function() {
             const duration = Date.now() - startTime;
-            if (duration < 120) {
-                finalize(false);
-            } else {
-                finalize(true);
-            }
+            if (duration < 120) { finalize(false); } else { finalize(true); }
         };
-
         img.src = url + "/favicon.ico?t=" + startTime;
     } else {
         const controller = new AbortController();
