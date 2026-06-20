@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimum-scale=1.0">
 <title>M3U Hub | Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -780,7 +780,6 @@ function renderizarModalParceria(usuario, senha) {
     const bodyModal = document.getElementById("modal-partner-body");
     bodyModal.innerHTML = "";
     
-    // Início estrutural da cópia unificada solicitada
     let textoCopiarTudo = `✅ Usuário: ${usuario}\n✅ Senha: ${senha}\n\nServidores:\n`;
 
     servidores.forEach((s, i) => {
@@ -789,7 +788,6 @@ function renderizarModalParceria(usuario, senha) {
         
         let textoParaCopiarIndividual = `${s.nome}\n\n🌐 Código: ${s.codigo}\n✅ Usuário: ${usuario}\n✅ Senha: ${senha}`;
         
-        // Alimenta a lista interna do bloco estruturado Copiar Tudo
         textoCopiarTudo += `${s.nome}\n🌐 Código: ${s.codigo}\n---------------------\n`;
         
         card.innerHTML = `
@@ -814,7 +812,6 @@ function renderizarModalParceria(usuario, senha) {
         };
     });
 
-    // Remove os hífens extras gerados no último loop para manter a formatação limpa
     if(textoCopiarTudo.endsWith("\n---------------------\n")) {
         textoCopiarTudo = textoCopiarTudo.substring(0, textoCopiarTudo.length - 23);
     }
