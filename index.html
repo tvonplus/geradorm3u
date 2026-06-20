@@ -192,7 +192,11 @@ body {
     justify-content: space-between;
     padding: 0 4px;
 }
-
+.modal-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain; 
+}
 .slider::before {
     content: "🌙";
     font-size: 10px;
@@ -703,7 +707,7 @@ input:checked + .slider::after {
     <div class="modal-content">
         <div class="modal-header">
             <div class="modal-header-title">
-                <img class="modal-logo" src="https://static.wixstatic.com/media/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png/v1/fill/w_536,h_536,al_c,lg,1,q_85,enc_avif,quality_auto/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png" alt="HD Player">
+                <img class="modal-logo" src="Logo.avif" alt="HD Player">
                 <h4>Códigos de Parceria HD Player</h4>
             </div>
             <button class="modal-close" onclick="closePartnerModal()">&times;</button>
