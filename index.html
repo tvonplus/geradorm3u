@@ -75,22 +75,34 @@ body {
 
 /* --- COLUNA ESQUERDA: SIDEBAR DE CONTROLE --- */
 .sidebar {
-    width: 260px;
+    width: 280px;
     background-color: var(--bg-sidebar);
     border-right: 1px solid var(--border);
     padding: 24px 18px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
     box-shadow: 10px 0 30px var(--shadow);
     z-index: 10;
+    height: 100%;
 }
+
+.sidebar-scrollable {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 4px;
+    margin-bottom: 15px;
+}
+
+/* Scrollbar da sidebar */
+.sidebar-scrollable::-webkit-scrollbar { width: 4px; }
+.sidebar-scrollable::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 10px; }
 
 .brand-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
+    margin-bottom: 20px;
 }
 
 .brand h2 {
@@ -237,13 +249,12 @@ input:checked + .slider::after {
 
 /* Formulário Vertical */
 .form-container {
-    margin-top: 30px;
-    flex-grow: 1;
+    margin-top: 15px;
 }
 
 .input-wrapper {
     position: relative;
-    margin-bottom: 16px;
+    margin-bottom: 14px;
 }
 
 .input-wrapper label {
@@ -281,9 +292,89 @@ input:checked + .slider::after {
     font-size: 13px;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2);
+    margin-bottom: 25px;
 }
 .btn-submit:hover {
     background-color: var(--accent-hover);
+}
+
+/* --- PARCERIA HD PLAYER --- */
+.hd-player-section {
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 5px;
+}
+
+.hd-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.hd-logo {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
+.hd-header h4 {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    color: var(--text-main);
+}
+
+.hd-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hd-item {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.hd-item-title {
+    font-weight: 700;
+    font-size: 12px;
+    color: var(--text-main);
+}
+
+.hd-item-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+.btn-copy-hd {
+    margin-top: 6px;
+    padding: 5px;
+    font-size: 10px;
+    font-weight: 600;
+    background-color: var(--bg-main);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    border-radius: 6px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+}
+.btn-copy-hd:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.btn-copy-hd.copied {
+    background-color: #22c55e !important;
+    color: white !important;
+    border-color: #22c55e !important;
 }
 
 .sidebar-footer {
@@ -292,6 +383,7 @@ input:checked + .slider::after {
     text-align: center;
     border-top: 1px solid var(--border);
     padding-top: 12px;
+    flex-shrink: 0;
 }
 
 /* --- COLUNA DIREITA: CONTEÚDO / LISTA --- */
@@ -441,6 +533,7 @@ input:checked + .slider::after {
 @media(max-width: 850px){
     body { flex-direction: column; overflow: auto; height: auto; }
     .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+    .sidebar-scrollable { overflow-y: visible; }
     .main-content { overflow-y: visible; padding: 20px; }
     .server-list { align-items: stretch; }
     .server-row { display: flex; flex-direction: column; align-items: stretch; text-align: center; justify-content: center; }
@@ -455,59 +548,70 @@ input:checked + .slider::after {
 <body>
 
 <div class="sidebar">
-    <div class="top-section">
-        <div class="brand-wrapper">
-            <div class="brand">
-                <h2>Gerador de M3U</h2>
-                <p>Gerenciador</p>
-            </div>
-            
-            <div class="header-controls">
-                <button class="palette-trigger-btn" onclick="togglePaletteMenu()" title="Mudar Cor do Tema">✏️</button>
+    <div class="sidebar-scrollable">
+        <div class="top-section">
+            <div class="brand-wrapper">
+                <div class="brand">
+                    <h2>Gerador de M3U</h2>
+                    <p>Gerenciador</p>
+                </div>
                 
-                <label class="theme-switch" title="Alternar Tema">
-                    <input type="checkbox" id="theme-toggle-chk" onchange="toggleTheme()">
-                    <div class="slider">
-                        <span class="knob"></span>
+                <div class="header-controls">
+                    <button class="palette-trigger-btn" onclick="togglePaletteMenu()" title="Mudar Cor do Tema">✏️</button>
+                    
+                    <label class="theme-switch" title="Alternar Tema">
+                        <input type="checkbox" id="theme-toggle-chk" onchange="toggleTheme()">
+                        <div class="slider">
+                            <span class="knob"></span>
+                        </div>
+                    </label>
+                </div>
+
+                <div class="color-menu-panel" id="palette-menu">
+                    <div class="color-option" onclick="setPalette('default')">
+                        <div class="color-circle" style="background-color: #f97316;"></div> Laranja Padrão
                     </div>
-                </label>
+                    <div class="color-option" onclick="setPalette('emerald')">
+                        <div class="color-circle" style="background-color: #10b981;"></div> Verde Esmeralda
+                    </div>
+                    <div class="color-option" onclick="setPalette('blue')">
+                        <div class="color-circle" style="background-color: #3b82f6;"></div> Azul Royal
+                    </div>
+                    <div class="color-option" onclick="setPalette('purple')">
+                        <div class="color-circle" style="background-color: #a855f7;"></div> Roxo Cyber
+                    </div>
+                    <div class="color-option" onclick="setPalette('ruby')">
+                        <div class="color-circle" style="background-color: #ef4444;"></div> Vermelho Rubi
+                    </div>
+                    <div class="color-option" onclick="setPalette('cyan')">
+                        <div class="color-circle" style="background-color: #06b6d4;"></div> Ciano Elétrico
+                    </div>
+                    <div class="color-option" onclick="setPalette('pink')">
+                        <div class="color-circle" style="background-color: #ec4899;"></div> Rosa Choque
+                    </div>
+                </div>
             </div>
 
-            <div class="color-menu-panel" id="palette-menu">
-                <div class="color-option" onclick="setPalette('default')">
-                    <div class="color-circle" style="background-color: #f97316;"></div> Laranja Padrão
+            <div class="form-container">
+                <div class="input-wrapper">
+                    <label>Usuário</label>
+                    <input id="user" placeholder="Digite o acesso" autocomplete="off">
                 </div>
-                <div class="color-option" onclick="setPalette('emerald')">
-                    <div class="color-circle" style="background-color: #10b981;"></div> Verde Esmeralda
+                <div class="input-wrapper">
+                    <label>Senha</label>
+                    <input id="pass" type="text" placeholder="Digite a senha" autocomplete="off">
                 </div>
-                <div class="color-option" onclick="setPalette('blue')">
-                    <div class="color-circle" style="background-color: #3b82f6;"></div> Azul Royal
-                </div>
-                <div class="color-option" onclick="setPalette('purple')">
-                    <div class="color-circle" style="background-color: #a855f7;"></div> Roxo Cyber
-                </div>
-                <div class="color-option" onclick="setPalette('ruby')">
-                    <div class="color-circle" style="background-color: #ef4444;"></div> Vermelho Rubi
-                </div>
-                <div class="color-option" onclick="setPalette('cyan')">
-                    <div class="color-circle" style="background-color: #06b6d4;"></div> Ciano Elétrico
-                </div>
-                <div class="color-option" onclick="setPalette('pink')">
-                    <div class="color-circle" style="background-color: #ec4899;"></div> Rosa Choque
-                </div>
+                <button class="btn-submit" onclick="gerar()">Gerar Acessos</button>
             </div>
         </div>
 
-        <div class="form-container">
-            <div class="input-wrapper">
-                <label>Usuário</label>
-                <input id="user" placeholder="Digite o acesso" autocomplete="off">
+        <div class="hd-player-section">
+            <div class="hd-header">
+                <img class="hd-logo" src="https://static.wixstatic.com/media/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png/v1/fill/w_536,h_536,al_c,lg,1,q_85,enc_avif,quality_auto/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png" alt="HD Player Logo">
+                <h4>Códigos HD Player</h4>
             </div>
-            <div class="input-wrapper">
-                <label>Senha</label>
-                <input id="pass" type="text" placeholder="Digite a senha" autocomplete="off">
-            </div>
-            <button class="btn-submit" onclick="gerar()">Gerar Acessos</button>
+            <div class="hd-list" id="hd-lista-codigos">
+                </div>
         </div>
     </div>
 
@@ -539,20 +643,56 @@ document.addEventListener("DOMContentLoaded", () => {
     if (savedPalette && savedPalette !== "default") {
         document.documentElement.setAttribute("data-palette", savedPalette);
     }
+    
+    // Inicializa a lista de códigos congelada visualmente
+    renderizarCodigosHD("---", "---");
 });
 
 const servidores = [
-    {nome:"🧿 Seven", url:"http://seven.blcplay.com"},
-    {nome:"💣 Explosion", url:"http://nsync.space"},
-    {nome:"⚡ Speed", url:"http://netuno.live"},
-    {nome:"🛸 Galaxy", url:"http://galaxy.blcplay.com"},
-    {nome:"🔥 Fire", url:"http://fire.kkrototv.fun"},
-    {nome:"🌑 Lunar", url:"http://lunar.kkrototv.fun"},
-    {nome:"🏛️ Atena", url:"http://atena.kkrototv.fun"},
-    {nome:"☀️ Solar", url:"http://solar.kkrototv.fun"},
-    {nome:"🌬️ Venus", url:"http://venus.blcplay.com"},
-    {nome:"🪐 Urano", url:"http://urano.kkrototv.fun"}
+    {nome:"🧿 Seven", url:"http://seven.blcplay.com", codigo:"1111"},
+    {nome:"💣 Explosion", url:"http://nsync.space", codigo:"5555"},
+    {nome:"⚡ Speed", url:"http://netuno.live", codigo:"3333"},
+    {nome:"🛸 Galaxy", url:"http://galaxy.blcplay.com", codigo:"6666"},
+    {nome:"🔥 Fire", url:"http://fire.kkrototv.fun", codigo:"1414"},
+    {nome:"🌑 Lunar", url:"http://lunar.kkrototv.fun", codigo:"4444"},
+    {nome:"🏛️ Atena", url:"http://atena.kkrototv.fun", codigo:"2233"},
+    {nome:"☀️ Solar", url:"http://solar.kkrototv.fun", codigo:"7777"},
+    {nome:"🌬️ Venus", url:"http://venus.blcplay.com", codigo:"9999"},
+    {nome:"🪐 Urano", url:"http://urano.kkrototv.fun", codigo:"8888"}
 ];
+
+function renderizarCodigosHD(usuario, senha) {
+    const container = document.getElementById("hd-lista-codigos");
+    container.innerHTML = "";
+    
+    servidores.forEach((s, i) => {
+        let item = document.createElement("div");
+        item.className = "hd-item";
+        
+        let textoCopiar = `${s.nome}\n\n🌐 Código: ${s.codigo}\n✅ Usuário: ${usuario}\n✅ Senha: ${senha}`;
+        
+        item.innerHTML = `
+            <div class="hd-item-title">${s.nome}</div>
+            <div class="hd-item-meta">
+                🌐 Código: ${s.codigo}<br>
+                ✅ Usuário: ${usuario}<br>
+                ✅ Senha: ${senha}
+            </div>
+            <button class="btn-copy-hd" id="copy-hd-${i}">Copiar Dados</button>
+        `;
+        container.appendChild(item);
+        
+        document.getElementById(`copy-hd-${i}`).onclick = function() {
+            navigator.clipboard.writeText(textoCopiar);
+            this.innerText = "Copiado!";
+            this.classList.add("copied");
+            setTimeout(() => { 
+                this.innerText = "Copiar Dados"; 
+                this.classList.remove("copied"); 
+            }, 1800);
+        };
+    });
+}
 
 function toggleTheme() {
     const body = document.documentElement;
@@ -598,6 +738,9 @@ function gerar(){
         return;
     }
 
+    // Atualiza os códigos da lateral com os dados reais digitados
+    renderizarCodigosHD(user, pass);
+
     let resultado = document.getElementById("resultado");
     resultado.innerHTML = "";
 
@@ -642,7 +785,6 @@ function gerar(){
     });
 }
 
-// Função de Validação Avançada Contra Falsos Positivos de Bloqueio Local
 function verificarStatus(url, elementId) {
     const indicator = document.getElementById(elementId);
     if (!indicator) return;
@@ -665,29 +807,24 @@ function verificarStatus(url, elementId) {
         };
 
         timeoutId = setTimeout(() => {
-            finalize(false); // Estourou os 5s = Offline
+            finalize(false);
         }, 5000);
 
         img.onload = function() {
-            finalize(true); // Se carregou a imagem = Servidor respondendo e Online
+            finalize(true);
         };
 
         img.onerror = function() {
             const duration = Date.now() - startTime;
-            // Se falhar em menos de 120ms em ambiente HTTPS, foi o bloqueio local do browser (Mixed Content Blocker)
-            // e NÃO uma resposta do servidor. Como o navegador bloqueia tudo, consideramos offline para segurança.
             if (duration < 120) {
                 finalize(false);
             } else {
-                // Se demorou mais e deu erro, o sinal chegou à rede, mas o servidor pode estar ativo recusando a rota direta
                 finalize(true);
             }
         };
 
-        // Adiciona timestamp dinâmico para limpar o cache do navegador
         img.src = url + "/favicon.ico?t=" + startTime;
     } else {
-        // Modo nativo Fetch para contextos limpos (HTTP -> HTTP ou HTTPS -> HTTPS)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
 
