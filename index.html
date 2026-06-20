@@ -21,6 +21,7 @@
     --accent-hover: #ea580c;
     --shadow: rgba(0,0,0,0.4);
     --switch-bg: #44403c;
+    --modal-bg: rgba(0, 0, 0, 0.75);
 }
 
 [data-theme="light"] {
@@ -35,6 +36,7 @@
     --accent-hover: #c2410c;
     --shadow: rgba(0,0,0,0.05);
     --switch-bg: #e7e5e4;
+    --modal-bg: rgba(0, 0, 0, 0.4);
 }
 
 /* --- PALETAS DE CORES PREMIUM --- */
@@ -75,34 +77,22 @@ body {
 
 /* --- COLUNA ESQUERDA: SIDEBAR DE CONTROLE --- */
 .sidebar {
-    width: 280px;
+    width: 260px;
     background-color: var(--bg-sidebar);
     border-right: 1px solid var(--border);
     padding: 24px 18px;
     display: flex;
     flex-direction: column;
+    justify-content: space-between;
     box-shadow: 10px 0 30px var(--shadow);
     z-index: 10;
-    height: 100%;
 }
-
-.sidebar-scrollable {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 4px;
-    margin-bottom: 15px;
-}
-
-/* Scrollbar da sidebar */
-.sidebar-scrollable::-webkit-scrollbar { width: 4px; }
-.sidebar-scrollable::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 10px; }
 
 .brand-wrapper {
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
-    margin-bottom: 20px;
 }
 
 .brand h2 {
@@ -249,12 +239,13 @@ input:checked + .slider::after {
 
 /* Formulário Vertical */
 .form-container {
-    margin-top: 15px;
+    margin-top: 30px;
+    flex-grow: 1;
 }
 
 .input-wrapper {
     position: relative;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .input-wrapper label {
@@ -292,89 +283,31 @@ input:checked + .slider::after {
     font-size: 13px;
     cursor: pointer;
     box-shadow: 0 4px 10px rgba(234, 88, 12, 0.2);
-    margin-bottom: 25px;
+    margin-bottom: 12px;
 }
 .btn-submit:hover {
     background-color: var(--accent-hover);
 }
 
-/* --- PARCERIA HD PLAYER --- */
-.hd-player-section {
-    border-top: 1px solid var(--border);
-    padding-top: 20px;
-    margin-top: 5px;
-}
-
-.hd-header {
+/* Botão Abrir Parceria */
+.btn-partner {
+    width: 100%;
+    padding: 11px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-card);
+    color: var(--text-main);
+    font-weight: 600;
+    font-size: 12px;
+    cursor: pointer;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    margin-bottom: 15px;
 }
-
-.hd-logo {
-    width: 24px;
-    height: 24px;
-    object-fit: contain;
-}
-
-.hd-header h4 {
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-    text-transform: uppercase;
-    color: var(--text-main);
-}
-
-.hd-list {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.hd-item {
-    background-color: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-}
-
-.hd-item-title {
-    font-weight: 700;
-    font-size: 12px;
-    color: var(--text-main);
-}
-
-.hd-item-meta {
-    font-size: 11px;
-    color: var(--text-muted);
-    line-height: 1.4;
-}
-
-.btn-copy-hd {
-    margin-top: 6px;
-    padding: 5px;
-    font-size: 10px;
-    font-weight: 600;
-    background-color: var(--bg-main);
-    border: 1px solid var(--border);
-    color: var(--text-main);
-    border-radius: 6px;
-    cursor: pointer;
-    text-align: center;
-    width: 100%;
-}
-.btn-copy-hd:hover {
+.btn-partner:hover {
     border-color: var(--accent);
     color: var(--accent);
-}
-.btn-copy-hd.copied {
-    background-color: #22c55e !important;
-    color: white !important;
-    border-color: #22c55e !important;
 }
 
 .sidebar-footer {
@@ -383,7 +316,6 @@ input:checked + .slider::after {
     text-align: center;
     border-top: 1px solid var(--border);
     padding-top: 12px;
-    flex-shrink: 0;
 }
 
 /* --- COLUNA DIREITA: CONTEÚDO / LISTA --- */
@@ -438,19 +370,16 @@ input:checked + .slider::after {
     transition: background-color 0.3s;
 }
 
-/* Estado de Carregamento (Cinza Piscando) */
 .status-indicator.checking {
     background-color: #78716c;
     animation: pulseStatus 1s infinite alternate;
 }
 
-/* Estado Online (Verde) */
 .status-indicator.online {
     background-color: #22c55e;
     box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
 }
 
-/* Estado Offline (Vermelho) */
 .status-indicator.offline {
     background-color: #ef4444;
     box-shadow: 0 0 6px rgba(239, 68, 68, 0.4);
@@ -525,22 +454,172 @@ input:checked + .slider::after {
     font-size: 13px;
 }
 
-/* Scrollbars */
+/* --- ESTILOS DO MODAL DE PARCERIA (POP-UP) --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: var(--modal-bg);
+    backdrop-filter: blur(4px);
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal-content {
+    background-color: var(--bg-sidebar);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    animation: modalFade 0.25s ease-out;
+}
+@keyframes modalFade {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.modal-header-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.modal-logo {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+}
+.modal-header h4 {
+    font-size: 15px;
+    font-weight: 700;
+}
+.modal-close {
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+}
+.modal-close:hover { color: var(--text-main); }
+
+.modal-body {
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.modal-body::-webkit-scrollbar { width: 4px; }
+.modal-body::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 4px; }
+
+.partner-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+.partner-info {
+    font-size: 12px;
+    line-height: 1.5;
+}
+.partner-name {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+.btn-copy-partner {
+    padding: 8px 14px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    cursor: pointer;
+    white-space: nowrap;
+}
+.btn-copy-partner:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+.btn-copy-partner.copied {
+    background-color: #22c55e !important;
+    color: white !important;
+    border-color: #22c55e !important;
+}
+
+/* Scrollbars Global */
 .main-content::-webkit-scrollbar { width: 5px; }
 .main-content::-webkit-scrollbar-thumb { background-color: var(--border); border-radius: 10px; }
 
-/* Responsividade */
+/* --- RESPONSIVIDADE CORRIGIDA (CELULAR) --- */
 @media(max-width: 850px){
     body { flex-direction: column; overflow: auto; height: auto; }
-    .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
-    .sidebar-scrollable { overflow-y: visible; }
+    .sidebar { width: 100%; height: auto; border-right: none; border-bottom: 1px solid var(--border); padding: 20px; }
+    .form-container { margin-top: 20px; }
     .main-content { overflow-y: visible; padding: 20px; }
-    .server-list { align-items: stretch; }
-    .server-row { display: flex; flex-direction: column; align-items: stretch; text-align: center; justify-content: center; }
-    .server-meta-block { flex-direction: column; justify-content: center; gap: 8px; }
-    .server-name { width: auto; text-align: center; }
-    .server-url-display { max-width: 100%; width: 100%; }
-    .row-actions { justify-content: center; }
+    .server-list { align-items: stretch; width: 100%; }
+    
+    /* Mantém Indicador, Nome e Link rigorosamente na mesma linha */
+    .server-row { 
+        display: flex; 
+        flex-direction: column; 
+        align-items: stretch; 
+        gap: 10px; 
+        padding: 12px;
+        width: 100%;
+    }
+    .server-meta-block { 
+        display: flex; 
+        flex-direction: row; 
+        align-items: center; 
+        justify-content: flex-start;
+        gap: 8px; 
+        width: 100%;
+    }
+    .server-name { 
+        width: auto; 
+        min-width: 65px;
+        max-width: 80px;
+        text-align: left; 
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .server-url-display { 
+        flex: 1;
+        width: 0; /* Força o flexbox a respeitar o truncamento de texto na mesma linha */
+        max-width: none; 
+    }
+    
+    /* Botões passam para a linha de baixo organizados */
+    .row-actions { 
+        justify-content: flex-end; 
+        width: 100%;
+    }
+    .row-actions button {
+        flex: 1;
+        text-align: center;
+    }
+    
     .color-menu-panel { right: 50%; transform: translateX(50%); top: 42px; }
 }
 </style>
@@ -548,70 +627,63 @@ input:checked + .slider::after {
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-scrollable">
-        <div class="top-section">
-            <div class="brand-wrapper">
-                <div class="brand">
-                    <h2>Gerador de M3U</h2>
-                    <p>Gerenciador</p>
-                </div>
+    <div class="top-section">
+        <div class="brand-wrapper">
+            <div class="brand">
+                <h2>Gerador de M3U</h2>
+                <p>Gerenciador</p>
+            </div>
+            
+            <div class="header-controls">
+                <button class="palette-trigger-btn" onclick="togglePaletteMenu()" title="Mudar Cor do Tema">✏️</button>
                 
-                <div class="header-controls">
-                    <button class="palette-trigger-btn" onclick="togglePaletteMenu()" title="Mudar Cor do Tema">✏️</button>
-                    
-                    <label class="theme-switch" title="Alternar Tema">
-                        <input type="checkbox" id="theme-toggle-chk" onchange="toggleTheme()">
-                        <div class="slider">
-                            <span class="knob"></span>
-                        </div>
-                    </label>
-                </div>
-
-                <div class="color-menu-panel" id="palette-menu">
-                    <div class="color-option" onclick="setPalette('default')">
-                        <div class="color-circle" style="background-color: #f97316;"></div> Laranja Padrão
+                <label class="theme-switch" title="Alternar Tema">
+                    <input type="checkbox" id="theme-toggle-chk" onchange="toggleTheme()">
+                    <div class="slider">
+                        <span class="knob"></span>
                     </div>
-                    <div class="color-option" onclick="setPalette('emerald')">
-                        <div class="color-circle" style="background-color: #10b981;"></div> Verde Esmeralda
-                    </div>
-                    <div class="color-option" onclick="setPalette('blue')">
-                        <div class="color-circle" style="background-color: #3b82f6;"></div> Azul Royal
-                    </div>
-                    <div class="color-option" onclick="setPalette('purple')">
-                        <div class="color-circle" style="background-color: #a855f7;"></div> Roxo Cyber
-                    </div>
-                    <div class="color-option" onclick="setPalette('ruby')">
-                        <div class="color-circle" style="background-color: #ef4444;"></div> Vermelho Rubi
-                    </div>
-                    <div class="color-option" onclick="setPalette('cyan')">
-                        <div class="color-circle" style="background-color: #06b6d4;"></div> Ciano Elétrico
-                    </div>
-                    <div class="color-option" onclick="setPalette('pink')">
-                        <div class="color-circle" style="background-color: #ec4899;"></div> Rosa Choque
-                    </div>
-                </div>
+                </label>
             </div>
 
-            <div class="form-container">
-                <div class="input-wrapper">
-                    <label>Usuário</label>
-                    <input id="user" placeholder="Digite o acesso" autocomplete="off">
+            <div class="color-menu-panel" id="palette-menu">
+                <div class="color-option" onclick="setPalette('default')">
+                    <div class="color-circle" style="background-color: #f97316;"></div> Laranja Padrão
                 </div>
-                <div class="input-wrapper">
-                    <label>Senha</label>
-                    <input id="pass" type="text" placeholder="Digite a senha" autocomplete="off">
+                <div class="color-option" onclick="setPalette('emerald')">
+                    <div class="color-circle" style="background-color: #10b981;"></div> Verde Esmeralda
                 </div>
-                <button class="btn-submit" onclick="gerar()">Gerar Acessos</button>
+                <div class="color-option" onclick="setPalette('blue')">
+                    <div class="color-circle" style="background-color: #3b82f6;"></div> Azul Royal
+                </div>
+                <div class="color-option" onclick="setPalette('purple')">
+                    <div class="color-circle" style="background-color: #a855f7;"></div> Roxo Cyber
+                </div>
+                <div class="color-option" onclick="setPalette('ruby')">
+                    <div class="color-circle" style="background-color: #ef4444;"></div> Vermelho Rubi
+                </div>
+                <div class="color-option" onclick="setPalette('cyan')">
+                    <div class="color-circle" style="background-color: #06b6d4;"></div> Ciano Elétrico
+                </div>
+                <div class="color-option" onclick="setPalette('pink')">
+                    <div class="color-circle" style="background-color: #ec4899;"></div> Rosa Choque
+                </div>
             </div>
         </div>
 
-        <div class="hd-player-section">
-            <div class="hd-header">
-                <img class="hd-logo" src="https://static.wixstatic.com/media/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png/v1/fill/w_536,h_536,al_c,lg,1,q_85,enc_avif,quality_auto/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png" alt="HD Player Logo">
-                <h4>Códigos HD Player</h4>
+        <div class="form-container">
+            <div class="input-wrapper">
+                <label>Usuário</label>
+                <input id="user" placeholder="Digite o acesso" autocomplete="off">
             </div>
-            <div class="hd-list" id="hd-lista-codigos">
-                </div>
+            <div class="input-wrapper">
+                <label>Senha</label>
+                <input id="pass" type="text" placeholder="Digite a senha" autocomplete="off">
+            </div>
+            <button class="btn-submit" onclick="gerar()">Gerar Acessos</button>
+            
+            <button class="btn-partner" onclick="openPartnerModal()">
+                <span>🤝</span> Parceria HD Player
+            </button>
         </div>
     </div>
 
@@ -624,6 +696,20 @@ input:checked + .slider::after {
     <h3>Servidores Disponíveis</h3>
     <div id="resultado">
         <div class="empty-state">Insira as credenciais ao lado e clique em "Gerar Acessos".</div>
+    </div>
+</div>
+
+<div class="modal-overlay" id="partner-modal" onclick="closePartnerModalOutside(event)">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-header-title">
+                <img class="modal-logo" src="https://static.wixstatic.com/media/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png/v1/fill/w_536,h_536,al_c,lg,1,q_85,enc_avif,quality_auto/39ab99_29ad152e926f4e3eb107261c042e0c3a~mv2.png" alt="HD Player">
+                <h4>Códigos de Parceria HD Player</h4>
+            </div>
+            <button class="modal-close" onclick="closePartnerModal()">&times;</button>
+        </div>
+        <div class="modal-body" id="modal-partner-body">
+            </div>
     </div>
 </div>
 
@@ -644,12 +730,12 @@ document.addEventListener("DOMContentLoaded", () => {
         document.documentElement.setAttribute("data-palette", savedPalette);
     }
     
-    // Inicializa a lista de códigos congelada visualmente
-    renderizarCodigosHD("---", "---");
+    // Inicializa os códigos do modal congelados visualmente antes de gerar
+    renderizarModalParceria("---", "---");
 });
 
 const servidores = [
-    {nome:"🧿 Seven", url:"http://seven.blcplay.com", codigo:"1111"},
+    {nome:"🧿 Seven", url:"http://sevenn.blcplay.com", codigo:"1111"},
     {nome:"💣 Explosion", url:"http://nsync.space", codigo:"5555"},
     {nome:"⚡ Speed", url:"http://netuno.live", codigo:"3333"},
     {nome:"🛸 Galaxy", url:"http://galaxy.blcplay.com", codigo:"6666"},
@@ -661,37 +747,52 @@ const servidores = [
     {nome:"🪐 Urano", url:"http://urano.kkrototv.fun", codigo:"8888"}
 ];
 
-function renderizarCodigosHD(usuario, senha) {
-    const container = document.getElementById("hd-lista-codigos");
-    container.innerHTML = "";
-    
+function renderizarModalParceria(usuario, senha) {
+    const bodyModal = document.getElementById("modal-partner-body");
+    bodyModal.innerHTML = "";
+
     servidores.forEach((s, i) => {
-        let item = document.createElement("div");
-        item.className = "hd-item";
+        let card = document.createElement("div");
+        card.className = "partner-card";
         
-        let textoCopiar = `${s.nome}\n\n🌐 Código: ${s.codigo}\n✅ Usuário: ${usuario}\n✅ Senha: ${senha}`;
+        // Formato exato solicitado para cópia limpa
+        let textoParaCopiar = `${s.nome}🧿\n\n🌐 Código: ${s.codigo}\n✅ Usuário: ${usuario}\n✅ Senha: ${senha}`;
         
-        item.innerHTML = `
-            <div class="hd-item-title">${s.nome}</div>
-            <div class="hd-item-meta">
-                🌐 Código: ${s.codigo}<br>
+        card.innerHTML = `
+            <div class="partner-info">
+                <div class="partner-name">${s.nome}🧿</div>
+                🌐 Código: <strong>${s.codigo}</strong><br>
                 ✅ Usuário: ${usuario}<br>
                 ✅ Senha: ${senha}
             </div>
-            <button class="btn-copy-hd" id="copy-hd-${i}">Copiar Dados</button>
+            <button class="btn-copy-partner" id="partner-copy-${i}">Copiar</button>
         `;
-        container.appendChild(item);
-        
-        document.getElementById(`copy-hd-${i}`).onclick = function() {
-            navigator.clipboard.writeText(textoCopiar);
+        bodyModal.appendChild(card);
+
+        document.getElementById(`partner-copy-${i}`).onclick = function() {
+            navigator.clipboard.writeText(textoParaCopiar);
             this.innerText = "Copiado!";
             this.classList.add("copied");
-            setTimeout(() => { 
-                this.innerText = "Copiar Dados"; 
-                this.classList.remove("copied"); 
+            setTimeout(() => {
+                this.innerText = "Copiar";
+                this.classList.remove("copied");
             }, 1800);
         };
     });
+}
+
+function openPartnerModal() {
+    document.getElementById("partner-modal").classList.add("active");
+}
+
+function closePartnerModal() {
+    document.getElementById("partner-modal").classList.remove("active");
+}
+
+function closePartnerModalOutside(e) {
+    if(e.target.id === "partner-modal") {
+        closePartnerModal();
+    }
 }
 
 function toggleTheme() {
@@ -738,8 +839,8 @@ function gerar(){
         return;
     }
 
-    // Atualiza os códigos da lateral com os dados reais digitados
-    renderizarCodigosHD(user, pass);
+    // Alimenta os blocos de cópia do Pop-up com dados reais gerados
+    renderizarModalParceria(user, pass);
 
     let resultado = document.getElementById("resultado");
     resultado.innerHTML = "";
